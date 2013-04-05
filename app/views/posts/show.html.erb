@@ -1,0 +1,36 @@
+<h2 style="color:white">Title: <%= link_to @post.title, @post.url %></h2>
+<h6 style="color:white">Submitted by: <%= link_to @post.user.name, "/users/#{@post.user.id}" %> on <%= disp_date(@post.created_at) %></p></h6>
+<% if logged_in? and current_user.id == @post.user.id %>
+	<h6 style="color:white"><%= link_to "Edit post", "/posts/#{@post.id}/edit" %></h6>
+<% end %>
+
+<div class= "well well-small">
+	<h6><u>Description:</u> <%= @post.body %></h6>
+</div>
+
+<div class= "well well-small">
+<h4>Have something to say?</h4>
+<% if logged_in? %>
+	<%= form_for [@post, @comment] do |f| %>
+		<%= render 'shared/errors', obj: @comment %>
+		<%= f.label "Body:" %>
+		<%= f.text_area :body, rows: 5 %>
+		<br>
+		<p>Commenting as <i><%= @current_user.name %></i></p>
+		<%= f.submit "Leave Your Comment", class: "btn btn-primary" %>
+	<% end %>
+<% else %>
+	<%= link_to 'Create an Account', register_path , class: "btn btn-primary" %>
+<% end %>
+</div>
+
+<div class= "well well-small">
+<h6>Comments:</h6>
+<% @comments.each do |comment| %>
+	<div class= "well well-small">
+	Comment score: <span id="comment_<%= comment.id %>_votes"><%= comment.net_votes %></span>
+		(<%= link_to "Vote Up", vote_post_comment_path(comment.post, comment, vote: true), method: 'post', remote: true %> ; <%= link_to "Vote Down", vote_post_comment_path(comment.post, comment, vote: false), method: 'post', remote: true %>)
+		<br><%= comment.body %> - <%= link_to comment.user.name, "/users/#{comment.user_id}" %>
+	</div>
+<% end %>	
+</div>
